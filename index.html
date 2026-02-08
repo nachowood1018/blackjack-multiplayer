@@ -16,10 +16,12 @@
 
   <div id="game"></div>
 
+  <!-- Socket.IO -->
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
 
+    // Apostar
     function placeBet() {
       const amount = parseInt(document.getElementById("bet").value);
       socket.emit("placeBet", amount);
@@ -29,6 +31,7 @@
       document.getElementById("chips").innerText = "Fichas: " + data.chips;
     });
 
+    // Iniciar ronda
     function startRound() {
       socket.emit("startRound");
     }
@@ -47,46 +50,54 @@
       }
     });
 
+    // Hit
     function hit() {
       socket.emit("hit");
-    }
-
-    function stand() {
-      socket.emit("stand");
-    }
-
-    function double() {
-      socket.emit("double");
     }
 
     socket.on("cardDealt", (hand) => {
       document.getElementById("game").innerHTML += "<p>Nueva carta: " + hand.map(c => c.value + c.suit).join(" ") + "</p>";
     });
 
+    // Stand
+    function stand() {
+      socket.emit("stand");
+    }
+
     socket.on("playerStood", (hand) => {
       document.getElementById("game").innerHTML += "<p>Te plantaste con: " + hand.map(c => c.value + c.suit).join(" ") + "</p>";
     });
+
+    // Double
+    function double() {
+      socket.emit("double");
+    }
 
     socket.on("doubleDone", (data) => {
       document.getElementById("chips").innerText = "Fichas: " + data.chips;
       document.getElementById("game").innerHTML += "<p>Doblas apuesta. Mano: " + data.hand.map(c => c.value + c.suit).join(" ") + "</p>";
     });
 
+    // Dealer termina
     socket.on("dealerFinished", (data) => {
       let cards = data.dealer.map(c => c.value + c.suit).join(" ");
       document.getElementById("game").innerHTML += "<h2>Dealer final: " + cards + " (Total: " + data.value + ")</h2>";
     });
 
+    // Resultado de la ronda
     socket.on("roundResult", (data) => {
-  let dealerCards = data.dealer.map(c => c.value + c.suit).join(" ");
-  let playerCards = data.hand.map(c => c.value + c.suit).join(" ");
+      let dealerCards = data.dealer.map(c => c.value + c.suit).join(" ");
+      let playerCards = data.hand.map(c => c.value + c.suit).join(" ");
 
-  document.getElementById("chips").innerText = "Fichas: " + data.chips;
+      document.getElementById("chips").innerText = "Fichas: " + data.chips;
 
-  document.getElementById("game").innerHTML += `
-    <h3>Resultado:</h3>
-    <p>Tu mano: ${playerCards} (Total: ${data.value})</p>
-    <p>Dealer: ${dealerCards} (Total: ${data.dealerValue})</p>
-    <p><strong>${data.result}</strong></p>
-  `;
-});
+      document.getElementById("game").innerHTML += `
+        <h3>Resultado:</h3>
+        <p>Tu mano: ${playerCards} (Total: ${data.value})</p>
+        <p>Dealer: ${dealerCards} (Total: ${data.dealerValue})</p>
+        <p><strong>${data.result}</strong></p>
+      `;
+    });
+  </script>
+</body>
+</html>
