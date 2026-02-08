@@ -5,9 +5,16 @@
 </head>
 <body>
   <h1>Blackjack</h1>
-  <p id="chips"></p>
+  <p id="chips">Fichas: 1000</p>
+
   <input id="bet" type="number" placeholder="Apuesta">
   <button onclick="placeBet()">Apostar</button>
+  <button onclick="startRound()">Iniciar ronda</button>
+  <button onclick="hit()">Hit</button>
+  <button onclick="stand()">Stand</button>
+  <button onclick="double()">Double</button>
+
+  <div id="game"></div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -21,6 +28,54 @@
     socket.on("betPlaced", (data) => {
       document.getElementById("chips").innerText = "Fichas: " + data.chips;
     });
-  </script>
-</body>
-</html>
+
+    function startRound() {
+      socket.emit("startRound");
+    }
+
+    socket.on("roundStarted", (data) => {
+      let gameDiv = document.getElementById("game");
+      gameDiv.innerHTML = "";
+
+      let dealerCard = data.dealer[0];
+      gameDiv.innerHTML += "<h2>Dealer: " + dealerCard.value + dealerCard.suit + "</h2>";
+
+      for (let id in data.players) {
+        let hand = data.players[id];
+        let cards = hand.map(c => c.value + c.suit).join(" ");
+        gameDiv.innerHTML += "<p>Jugador " + id + ": " + cards + "</p>";
+      }
+    });
+
+    function hit() {
+      socket.emit("hit");
+    }
+
+    function stand() {
+      socket.emit("stand");
+    }
+
+    function double() {
+      socket.emit("double");
+    }
+
+    socket.on("cardDealt", (hand) => {
+      document.getElementById("game").innerHTML += "<p>Nueva carta: " + hand.map(c => c.value + c.suit).join(" ") + "</p>";
+    });
+
+    socket.on("playerStood", (hand) => {
+      document.getElementById("game").innerHTML += "<p>Te plantaste con: " + hand.map(c => c.value + c.suit).join(" ") + "</p>";
+    });
+
+    socket.on("doubleDone", (data) => {
+      document.getElementById("chips").innerText = "Fichas: " + data.chips;
+      document.getElementById("game").innerHTML += "<p>Doblas apuesta. Mano: " + data.hand.map(c => c.value + c.suit).join(" ") + "</p>";
+    });
+
+    socket.on("dealerFinished", (data) => {
+      let cards = data.dealer.map(c => c.value + c.suit).join(" ");
+      document.getElementById("game").innerHTML += "<h2>Dealer final: " + cards + " (Total: " + data.value + ")</h2>";
+    });
+
+    socket.on("roundResult", (data) => {
+      let dealerCards = data.dealer.map(c => c.value +
