@@ -78,4 +78,15 @@
     });
 
     socket.on("roundResult", (data) => {
-      let dealerCards = data.dealer.map(c => c.value +
+  let dealerCards = data.dealer.map(c => c.value + c.suit).join(" ");
+  let playerCards = data.hand.map(c => c.value + c.suit).join(" ");
+
+  document.getElementById("chips").innerText = "Fichas: " + data.chips;
+
+  document.getElementById("game").innerHTML += `
+    <h3>Resultado:</h3>
+    <p>Tu mano: ${playerCards} (Total: ${data.value})</p>
+    <p>Dealer: ${dealerCards} (Total: ${data.dealerValue})</p>
+    <p><strong>${data.result}</strong></p>
+  `;
+});
