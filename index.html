@@ -2,6 +2,77 @@
 <html>
 <head>
   <title>Blackjack Multiplayer</title>
+<style>
+  body {
+    background-color: #0b3d0b;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+  }
+
+  h1 {
+    color: gold;
+    text-shadow: 2px 2px #000;
+  }
+
+  #chips {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  button {
+    background-color: #222;
+    color: gold;
+    border: 2px solid gold;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background-color: gold;
+    color: #222;
+  }
+
+  .card {
+    display: inline-block;
+    width: 60px;
+    height: 90px;
+    border: 1px solid #fff;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #000;
+    margin: 5px;
+    font-size: 20px;
+    line-height: 90px;
+    text-align: center;
+    box-shadow: 2px 2px 5px #000;
+  }
+
+  .hearts, .diamonds {
+    color: red;
+  }
+
+  .spades, .clubs {
+    color: black;
+  }
+
+  #game {
+    margin-top: 20px;
+  }
+</style>
+function renderCard(card) {
+  let suitClass = "";
+  if (card.suit === "♥") suitClass = "hearts";
+  if (card.suit === "♦") suitClass = "diamonds";
+  if (card.suit === "♠") suitClass = "spades";
+  if (card.suit === "♣") suitClass = "clubs";
+
+  return `<div class="card ${suitClass}">${card.value}${card.suit}</div>`;
+}
+let cardsHTML = hand.map(c => renderCard(c)).join("");
+gameDiv.innerHTML += `<p>Jugador ${id}: ${cardsHTML}</p>`;
 </head>
 <body>
   <h1>Blackjack</h1>
