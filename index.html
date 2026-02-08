@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Blackjack Multiplayer</title>
+</head>
+<body>
+  <h1>Blackjack</h1>
+  <p id="chips"></p>
+  <input id="bet" type="number" placeholder="Apuesta">
+  <button onclick="placeBet()">Apostar</button>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    function placeBet() {
+      const amount = parseInt(document.getElementById("bet").value);
+      socket.emit("placeBet", amount);
+    }
+
+    socket.on("betPlaced", (data) => {
+      document.getElementById("chips").innerText = "Fichas: " + data.chips;
+    });
+  </script>
+</body>
+</html>
